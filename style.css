@@ -43,7 +43,7 @@ body{
   position:fixed;
   inset:0;
   z-index:0;
-  background-image:url('flower-background.jpg');
+  background-image:url('assets/flower-background.jpg');
   background-size:cover;
   background-position:center;
   background-attachment:fixed;
@@ -83,6 +83,49 @@ body{
   background:linear-gradient(90deg, var(--gold-500), var(--rose-500), var(--wine-700));
   box-shadow:0 0 10px rgba(201,161,90,.6);
   transition:width .12s ease-out;
+}
+
+/* ---------- Language toggle ---------- */
+
+.lang-toggle{
+  position:fixed;
+  top:16px;
+  right:16px;
+  z-index:25;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:9px 14px;
+  border-radius:999px;
+  border:1px solid rgba(216,182,121,.55);
+  background:rgba(255,252,249,.88);
+  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(10px);
+  box-shadow:0 8px 20px -10px rgba(35,12,18,.5);
+  font-family:'EB Garamond', serif;
+  font-size:14.5px;
+  color:var(--wine-800);
+  cursor:pointer;
+  transition:transform .25s ease, box-shadow .25s ease, background .25s ease;
+  opacity:0;
+  animation:fadeUp 700ms ease 200ms forwards;
+}
+.lang-toggle:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 24px -10px rgba(35,12,18,.55);
+  background:var(--blush-100);
+}
+.lang-toggle:active{ transform:translateY(0) scale(.96); }
+.lang-icon{ font-size:15px; line-height:1; }
+.lang-label{
+  font-weight:600;
+  letter-spacing:.03em;
+  min-width:20px;
+  text-align:left;
+}
+
+@media (max-width:520px){
+  .lang-toggle{ top:12px; right:12px; padding:8px 12px; font-size:13.5px; }
 }
 
 /* ---------- Layout ---------- */
@@ -247,16 +290,18 @@ body{
   font-size:clamp(34px, 8vw, 48px);
   line-height:1.1;
   margin:0 0 6px;
+  opacity:0;
+  animation:fadeUp 800ms ease 420ms forwards;
+}
+.name > .i18n{
   background:linear-gradient(100deg, var(--wine-800) 30%, var(--gold-500) 50%, var(--wine-800) 70%);
   background-size:220% 100%;
   -webkit-background-clip:text;
   background-clip:text;
   color:transparent;
   text-shadow:0 10px 24px rgba(122,46,58,.15);
-  opacity:0;
-  animation:
-    fadeUp 800ms ease 420ms forwards,
-    nameShine 5s linear 1.3s infinite;
+  display:inline-block;
+  animation:nameShine 5s linear 1.3s infinite;
 }
 @keyframes nameShine{
   0%{ background-position:220% 0; }
@@ -502,6 +547,11 @@ body{
 .contact-btn.whatsapp:hover{
   box-shadow:0 14px 26px -8px rgba(39,107,74,.6);
 }
+.contact-btn svg{
+  width:16px;
+  height:16px;
+  flex:none;
+}
 .contact-btn.email{
   background:linear-gradient(135deg, var(--gold-500), var(--gold-600));
   box-shadow:0 10px 20px -8px rgba(173,134,66,.55);
@@ -545,8 +595,44 @@ body{
 }
 
 @media print{
-  #petal-canvas, .bg-overlay, .contact-btn.ghost, #scroll-progress{ display:none !important; }
+  #petal-canvas, .bg-overlay, #scroll-progress, .lang-toggle, .contact-row{ display:none !important; }
   .bg-fixed{ position:absolute; opacity:.15; }
   .card{ box-shadow:none; border:1px solid #ccc; background:#fff; backdrop-filter:none; }
   .wrap{ padding:10px; }
+
+  /* Freeze every animation/transition at its resting state so nothing is
+     mid-fade, mid-shimmer, or mid-gradient when the page is captured. */
+  *{
+    animation:none !important;
+    transition:none !important;
+    text-shadow:none !important;
+  }
+  .card::after,
+  .card::before{ display:none !important; }
+
+  .reveal,
+  .eyebrow,
+  .ganesh,
+  .devanagari,
+  .chip,
+  .name,
+  .name > .i18n{
+    opacity:1 !important;
+    transform:none !important;
+  }
+
+  /* The name uses an animated gradient clipped to the text for the on-screen
+     shimmer; print doesn't run animations, so force it back to solid ink. */
+  .name > .i18n{
+    background:none !important;
+    -webkit-text-fill-color:var(--wine-800) !important;
+    color:var(--wine-800) !important;
+  }
+  .name em{ -webkit-text-fill-color:var(--rose-600) !important; color:var(--rose-600) !important; }
+
+  .section-title::after{ width:64px !important; }
+
+  /* .credit is white-on-photo for screen; on print the photo is faint, so
+     switch it to plain dark ink instead of relying on a text-shadow. */
+  .credit{ color:var(--ink-soft) !important; }
 }
