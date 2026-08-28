@@ -38,6 +38,37 @@
   var printBtn = document.getElementById('printBtn');
   if (printBtn) { printBtn.addEventListener('click', function () { window.print(); }); }
 
+  /* ---- Language toggle (English / Hindi) ---- */
+  var langToggle = document.getElementById('langToggle');
+  var langLabel = document.getElementById('langLabel');
+  var htmlRoot = document.getElementById('html-root');
+  var i18nEls = document.querySelectorAll('.i18n');
+
+  function applyLang(lang) {
+    i18nEls.forEach(function (el) {
+      var text = el.getAttribute('data-' + lang);
+      if (text !== null) el.textContent = text;
+    });
+    if (htmlRoot) htmlRoot.setAttribute('lang', lang === 'hi' ? 'hi' : 'en');
+    if (langLabel) langLabel.textContent = lang === 'hi' ? 'EN' : 'हिं';
+    if (langToggle) {
+      langToggle.setAttribute('aria-label', lang === 'hi' ? 'Switch page to English' : 'Switch page to Hindi');
+    }
+    try { window.localStorage.setItem('biodata-lang', lang); } catch (e) { /* storage unavailable */ }
+  }
+
+  if (langToggle) {
+    var savedLang = 'en';
+    try { savedLang = window.localStorage.getItem('biodata-lang') || 'en'; } catch (e) { /* storage unavailable */ }
+    applyLang(savedLang);
+
+    var currentLang = savedLang;
+    langToggle.addEventListener('click', function () {
+      currentLang = currentLang === 'hi' ? 'en' : 'hi';
+      applyLang(currentLang);
+    });
+  }
+
   /* ---- Falling petals ambient animation ---- */
   var canvas = document.getElementById('petal-canvas');
   if (!canvas || reduceMotion) return;
